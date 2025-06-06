@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"testing"
 	"trivia/internal/models"
 	"trivia/internal/utils"
@@ -16,7 +17,7 @@ func TestCategoryGetAll(t *testing.T) {
 	repo := NewCategoryRepository(db)
 	category := models.Category{
 		Name:     "Category A",
-		ImageUrl: "http://example.com/image.png",
+		ImageUrl: sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(category)
@@ -25,7 +26,7 @@ func TestCategoryGetAll(t *testing.T) {
 	}
 
 	// Act
-	categories, err := repo.GetAll(map[string]interface{}{"id": id})
+	categories, err := repo.GetAll(map[string]any{"id": id})
 	if err != nil {
 		t.Fatalf("Failed to get category: %v", err)
 	}
@@ -49,7 +50,7 @@ func TestCategoryCreate(t *testing.T) {
 
 	category := models.Category{
 		Name:     "Category A",
-		ImageUrl: "http://example.com/image.png",
+		ImageUrl: sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	// Act
@@ -73,7 +74,7 @@ func TestCategoryUpdate(t *testing.T) {
 
 	category := models.Category{
 		Name:     "Category A",
-		ImageUrl: "http://example.com/image.png",
+		ImageUrl: sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(category)
@@ -83,7 +84,7 @@ func TestCategoryUpdate(t *testing.T) {
 
 	category.ID = id
 	category.Name = "Category B"
-	category.ImageUrl = "http://example.com/new_image.png"
+	category.ImageUrl = sql.NullString{String: "http://example.com/image.png", Valid: true}
 
 	// Act
 	err = repo.Update(category)
@@ -111,7 +112,7 @@ func TestCategoryDelete(t *testing.T) {
 
 	category := models.Category{
 		Name:     "Category A",
-		ImageUrl: "http://example.com/image.png",
+		ImageUrl: sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(category)

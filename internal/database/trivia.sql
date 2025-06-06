@@ -76,3 +76,6 @@ CREATE TABLE IF NOT EXISTS question_queue (
     FOREIGN KEY (game_id) REFERENCES games(id),
     FOREIGN KEY (question_id) REFERENCES questions(id)
 );
+
+-- INSERT OR IGNORE INTO categories (id, name) VALUES (1, 'General Knowledge');
+-- INSERT OR IGNORE INTO sub_categories (id, name, category_id) VALUES (1, 'General Knowledge', 1);

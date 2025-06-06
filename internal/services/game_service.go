@@ -63,9 +63,17 @@ func (s *GameService) SetSelectedGame(gameId int, questionIds []int) error {
 
 func (s *GameService) SetRandomGame(gameId, numberOfQuestions int, percentages map[int]float64) error {
 	questions := []models.Question{}
+	numberOfQuestions += 10 // Add a buffer of 10 questions to ensure we have enough to work with
 	for difficulty, percentage := range percentages {
-		limit := int(float64(numberOfQuestions) * percentage)
-		difficultyQuestions, err := s.questionRepo.Get(map[string]interface{}{"difficulty_level": difficulty, "per_page": limit})
+		limit := int(float64(numberOfQuestions) * (percentage / 100.0))
+		if limit <= 0 {
+			continue
+		}
+		if limit > numberOfQuestions {
+			limit = numberOfQuestions // Ensure we don't exceed the total number of questions requested
+		}
+
+		difficultyQuestions, err := s.questionRepo.Get(map[string]any{"difficulty_level": difficulty, "per_page": limit})
 		if err != nil {
 			return fmt.Errorf("%v", err)
 		}
@@ -80,4 +88,13 @@ func (s *GameService) SetRandomGame(gameId, numberOfQuestions int, percentages m
 	}
 
 	return nil
+}
+
+func (s *GameService) FetchQueueByGameId(gameId, limit int64) ([]models.QuestionQueueResponse, error) {
+	queue, err := s.queueRepo.FetchQueueByGameId(gameId, limit)
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	return queue, nil
 }

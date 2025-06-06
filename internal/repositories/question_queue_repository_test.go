@@ -44,7 +44,7 @@ func TestQuestionQueueFetchQueueByGameId(t *testing.T) {
 	}
 
 	// Act
-	queue, err := repo.FetchQueueByGameId(gameId, 1)
+	queue, err := repo.FetchQueueByGameId(int64(gameId), 1)
 	if err != nil {
 		t.Fatalf("Failed to fetch question queue: %v", err)
 	}

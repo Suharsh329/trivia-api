@@ -14,8 +14,8 @@ func NewQuestionQueueRepository(db *sql.DB) *QuestionQueueRepository {
 	return &QuestionQueueRepository{db: db}
 }
 
-func (r *QuestionQueueRepository) FetchQueueByGameId(gameId, limit int) ([]models.QuestionQueueResponse, error) {
-	sql := "SELECT qq.id AS queue_id, qs.id AS question_id, qs.question_text, qs.correct_answer, qs.acceptable_answer, qs.difficulty_level, s.id AS sub_category_id, s.name, qq.game_id FROM question_queue qq INNER JOIN questions qs ON qq.question_id = qs.id INNER JOIN sub_categories s ON s.id = qs.sub_category_id WHERE qq.game_id = ? LIMIT ?"
+func (r *QuestionQueueRepository) FetchQueueByGameId(gameId, limit int64) ([]models.QuestionQueueResponse, error) {
+	sql := "SELECT qq.id AS queue_id, qs.id AS question_id, qs.question_text, qs.correct_answer, qs.acceptable_answer, qs.difficulty_level, qs.image_url AS image, s.id AS sub_category_id, s.name, qq.game_id FROM question_queue qq INNER JOIN questions qs ON qq.question_id = qs.id INNER JOIN sub_categories s ON s.id = qs.sub_category_id WHERE qq.game_id = ? LIMIT ?"
 
 	stmt, err := r.db.Prepare(sql)
 	if err != nil {

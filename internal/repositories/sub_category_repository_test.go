@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"testing"
 	"trivia/internal/models"
 	"trivia/internal/utils"
@@ -17,7 +18,7 @@ func TestSubCategoryGetAll(t *testing.T) {
 	subCategory := models.SubCategory{
 		Name:       "SubCategory A",
 		CategoryID: 1,
-		ImageUrl:   "http://example.com/image.png",
+		ImageUrl:   sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(subCategory)
@@ -51,7 +52,7 @@ func TestSubCategoryCreate(t *testing.T) {
 	subCategory := models.SubCategory{
 		Name:       "SubCategory A",
 		CategoryID: 1,
-		ImageUrl:   "http://example.com/image.png",
+		ImageUrl:   sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	// Act
@@ -76,7 +77,7 @@ func TestSubCategoryUpdate(t *testing.T) {
 	subCategory := models.SubCategory{
 		Name:       "SubCategory A",
 		CategoryID: 1,
-		ImageUrl:   "http://example.com/image.png",
+		ImageUrl:   sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(subCategory)
@@ -86,7 +87,7 @@ func TestSubCategoryUpdate(t *testing.T) {
 
 	subCategory.ID = id
 	subCategory.Name = "SubCategory B"
-	subCategory.ImageUrl = "http://example.com/new_image.png"
+	subCategory.ImageUrl = sql.NullString{String: "http://example.com/image.png", Valid: true}
 
 	// Act
 	err = repo.Update(subCategory)
@@ -115,7 +116,7 @@ func TestSubCategoryDelete(t *testing.T) {
 	subCategory := models.SubCategory{
 		Name:       "SubCategory A",
 		CategoryID: 1,
-		ImageUrl:   "http://example.com/image.png",
+		ImageUrl:   sql.NullString{String: "http://example.com/image.png", Valid: true},
 	}
 
 	id, err := repo.Create(subCategory)

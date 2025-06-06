@@ -13,7 +13,7 @@ func SetupTestDB() *sql.DB {
 		log.Fatal(err)
 	}
 
-	queryBytes, err := os.ReadFile("../database/trivia.sql")
+	queryBytes, err := os.ReadFile("../../internal/database/trivia.sql")
 	if err != nil {
 		panic(err)
 	}

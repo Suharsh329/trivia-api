@@ -9,7 +9,7 @@ import (
 
 // Connect to a database
 func ConnectDatabase() *sql.DB {
-	db, err := sql.Open("sqlite3", "../database/trivia.db")
+	db, err := sql.Open("sqlite3", "internal/database/trivia.db")
 	if err != nil {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}

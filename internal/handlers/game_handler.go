@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 	"trivia/internal/models"
 	"trivia/internal/response"
 	"trivia/internal/services"
@@ -21,7 +23,7 @@ func ValidateGame(game models.Game) bool {
 }
 
 func (h *GameHandler) GetGames(w http.ResponseWriter, r *http.Request) {
-	filters := make(map[string]interface{})
+	filters := make(map[string]any)
 	json.NewDecoder(r.Body).Decode(&filters)
 
 	games, err := h.Service.GetGames(filters)
@@ -31,6 +33,42 @@ func (h *GameHandler) GetGames(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.Success(w, games)
+}
+
+func (h *GameHandler) GetGame(w http.ResponseWriter, r *http.Request) {
+	var gameId int64
+	var limit int64
+	urlValues, err := url.ParseQuery(r.URL.RawQuery)
+
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, "Invalid query parameters")
+		return
+	}
+	if gameIdStr := urlValues.Get("gameId"); gameIdStr != "" {
+		if _, err := fmt.Sscan(gameIdStr, &gameId); err != nil {
+			response.Error(w, http.StatusBadRequest, "Invalid gameId")
+			return
+		}
+	} else {
+		response.Error(w, http.StatusBadRequest, "Missing gameId")
+		return
+	}
+	if limitStr := urlValues.Get("limit"); limitStr != "" {
+		if _, err := fmt.Sscan(limitStr, &limit); err != nil {
+			response.Error(w, http.StatusBadRequest, "Invalid limit")
+			return
+		}
+	} else {
+		limit = 10
+	}
+
+	questions, err := h.Service.FetchQueueByGameId(gameId, limit)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, "Failed to fetch questions")
+		return
+	}
+
+	response.Success(w, map[string]any{"questions": questions})
 }
 
 func (h *GameHandler) CreateGame(w http.ResponseWriter, r *http.Request) {
@@ -43,13 +81,13 @@ func (h *GameHandler) CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.Service.CreateGame(game)
+	newGame, err := h.Service.CreateGame(game)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, "Failed to create a game")
 		return
 	}
 
-	response.Success(w, "Game created successfully")
+	response.Success(w, map[string]any{"message": "Game created successfully", "game": newGame})
 }
 
 func (h *GameHandler) UpdateGame(w http.ResponseWriter, r *http.Request) {

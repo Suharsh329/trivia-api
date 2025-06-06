@@ -12,9 +12,10 @@ func RegisterGameRoutes(mux *http.ServeMux, db *sql.DB) {
 	gameHandler := handlers.NewGameHandler(gameService)
 
 	mux.HandleFunc("GET /games", gameHandler.GetGames)
+	mux.HandleFunc("GET /game", gameHandler.GetGame)
 	mux.HandleFunc("POST /games", gameHandler.CreateGame)
-	mux.HandleFunc("POST /games/set-selected-game", gameHandler.DeleteGame)
-	mux.HandleFunc("POST /games/set-random-game", gameHandler.DeleteGame)
+	mux.HandleFunc("POST /games/set-selected-game", gameHandler.SetSelectedGame)
+	mux.HandleFunc("POST /games/set-random-game", gameHandler.SetRandomGame)
 	mux.HandleFunc("PUT /games", gameHandler.UpdateGame)
 	mux.HandleFunc("DELETE /games", gameHandler.DeleteGame)
 }
