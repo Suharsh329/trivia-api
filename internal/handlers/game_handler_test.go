@@ -46,8 +46,6 @@ func TestCreateGame(t *testing.T) {
 	gameService := services.NewGameService(db)
 	handler := NewGameHandler(gameService)
 
-	expected := `{"data":"Game created successfully","success":true}`
-
 	game := models.Game{Name: "Sample Game"}
 	body, _ := json.Marshal(game)
 	req, err := http.NewRequest("POST", "/games", bytes.NewBuffer(body))
@@ -64,8 +62,43 @@ func TestCreateGame(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Parse the response to verify structure
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Failed to parse response JSON: %v", err)
+	}
+
+	// Check success field
+	if success, ok := response["success"].(bool); !ok || !success {
+		t.Errorf("Expected success to be true, got %v", response["success"])
+	}
+
+	// Check data structure
+	data, ok := response["data"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("Expected data to be an object, got %T", response["data"])
+	}
+
+	// Check message
+	if message, ok := data["message"].(string); !ok || message != "Game created successfully" {
+		t.Errorf("Expected message 'Game created successfully', got %v", data["message"])
+	}
+
+	// Check game object exists
+	gameData, ok := data["game"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("Expected game object in data, got %T", data["game"])
+	}
+
+	// Check game name
+	if gameName, ok := gameData["game_name"].(string); !ok || gameName != "Sample Game" {
+		t.Errorf("Expected game name 'Sample Game', got %v", gameData["game_name"])
+	}
+
+	// Check game ID exists and is positive
+	if gameID, ok := gameData["id"].(float64); !ok || gameID <= 0 {
+		t.Errorf("Expected positive game ID, got %v", gameData["id"])
 	}
 }
 
@@ -74,8 +107,6 @@ func TestUpdateGame(t *testing.T) {
 	db := utils.SetupTestDB()
 	gameService := services.NewGameService(db)
 	handler := NewGameHandler(gameService)
-
-	expected := `{"data":"Game updated successfully","success":true}`
 
 	game := models.Game{Name: "Sample Game"}
 	body, _ := json.Marshal(game)
@@ -93,8 +124,21 @@ func TestUpdateGame(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Parse the response to verify structure
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Failed to parse response JSON: %v", err)
+	}
+
+	// Check success field
+	if success, ok := response["success"].(bool); !ok || !success {
+		t.Errorf("Expected success to be true, got %v", response["success"])
+	}
+
+	// Check data message
+	if data, ok := response["data"].(string); !ok || data != "Game updated successfully" {
+		t.Errorf("Expected data 'Game updated successfully', got %v", response["data"])
 	}
 }
 
@@ -103,8 +147,6 @@ func TestDeleteGame(t *testing.T) {
 	db := utils.SetupTestDB()
 	gameService := services.NewGameService(db)
 	handler := NewGameHandler(gameService)
-
-	expected := `{"data":"Game deleted successfully","success":true}`
 
 	body, _ := json.Marshal(1)
 	req, err := http.NewRequest("DELETE", "/games", bytes.NewBuffer(body))
@@ -121,8 +163,21 @@ func TestDeleteGame(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Parse the response to verify structure
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Failed to parse response JSON: %v", err)
+	}
+
+	// Check success field
+	if success, ok := response["success"].(bool); !ok || !success {
+		t.Errorf("Expected success to be true, got %v", response["success"])
+	}
+
+	// Check data message
+	if data, ok := response["data"].(string); !ok || data != "Game deleted successfully" {
+		t.Errorf("Expected data 'Game deleted successfully', got %v", response["data"])
 	}
 }
 func TestSetSelectedGame(t *testing.T) {
@@ -130,8 +185,6 @@ func TestSetSelectedGame(t *testing.T) {
 	db := utils.SetupTestDB()
 	gameService := services.NewGameService(db)
 	handler := NewGameHandler(gameService)
-
-	expected := `{"data":"Selected game set successfully","success":true}`
 
 	requestData := struct {
 		GameId      int   `json:"gameId"`
@@ -155,8 +208,21 @@ func TestSetSelectedGame(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Parse the response to verify structure
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Failed to parse response JSON: %v", err)
+	}
+
+	// Check success field
+	if success, ok := response["success"].(bool); !ok || !success {
+		t.Errorf("Expected success to be true, got %v", response["success"])
+	}
+
+	// Check data message
+	if data, ok := response["data"].(string); !ok || data != "Selected game set successfully" {
+		t.Errorf("Expected data 'Selected game set successfully', got %v", response["data"])
 	}
 }
 
@@ -165,8 +231,6 @@ func TestSetRandomGame(t *testing.T) {
 	db := utils.SetupTestDB()
 	gameService := services.NewGameService(db)
 	handler := NewGameHandler(gameService)
-
-	expected := `{"data":"Random game set successfully","success":true}`
 
 	requestData := struct {
 		GameId            int             `json:"gameId"`
@@ -192,7 +256,20 @@ func TestSetRandomGame(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	// Parse the response to verify structure
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Failed to parse response JSON: %v", err)
+	}
+
+	// Check success field
+	if success, ok := response["success"].(bool); !ok || !success {
+		t.Errorf("Expected success to be true, got %v", response["success"])
+	}
+
+	// Check data message
+	if data, ok := response["data"].(string); !ok || data != "Random game set successfully" {
+		t.Errorf("Expected data 'Random game set successfully', got %v", response["data"])
 	}
 }

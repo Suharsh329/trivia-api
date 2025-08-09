@@ -31,7 +31,7 @@ func (r *QuestionQueueRepository) FetchQueueByGameId(gameId, limit int64) ([]mod
 	var queue models.QuestionQueueResponse
 	var queues []models.QuestionQueueResponse
 	for rows.Next() {
-		if err := rows.Scan(&queue.QueueID, &queue.QuestionID, &queue.QuestionText, &queue.CorrectAnswer, &queue.AcceptableAnswer, &queue.DifficultyLevel, &queue.SubCategoryID, &queue.SubCategoryName, &queue.GameID); err != nil {
+		if err := rows.Scan(&queue.QueueID, &queue.QuestionID, &queue.QuestionText, &queue.CorrectAnswer, &queue.AcceptableAnswer, &queue.DifficultyLevel, &queue.ImageURL, &queue.SubCategoryID, &queue.SubCategoryName, &queue.GameID); err != nil {
 			return nil, fmt.Errorf("%v", err)
 		}
 		queues = append(queues, queue)

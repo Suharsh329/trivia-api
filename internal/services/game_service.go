@@ -54,7 +54,7 @@ func (s *GameService) SetSelectedGame(gameId int, questionIds []int) error {
 	for _, questionId := range questionIds {
 		_, err := s.queueRepo.Add(gameId, questionId)
 		if err != nil {
-			return fmt.Errorf("%v", err)
+			return fmt.Errorf("failed to add question %d to game %d queue: %w", questionId, gameId, err)
 		}
 	}
 
@@ -75,7 +75,7 @@ func (s *GameService) SetRandomGame(gameId, numberOfQuestions int, percentages m
 
 		difficultyQuestions, err := s.questionRepo.Get(map[string]any{"difficulty_level": difficulty, "per_page": limit})
 		if err != nil {
-			return fmt.Errorf("%v", err)
+			return fmt.Errorf("failed to get questions for difficulty %d: %w", difficulty, err)
 		}
 		questions = append(questions, difficultyQuestions...)
 	}
@@ -83,7 +83,7 @@ func (s *GameService) SetRandomGame(gameId, numberOfQuestions int, percentages m
 	for _, question := range questions {
 		_, err := s.queueRepo.Add(gameId, question.ID)
 		if err != nil {
-			return fmt.Errorf("%v", err)
+			return fmt.Errorf("failed to add question %d to game %d queue: %w", question.ID, gameId, err)
 		}
 	}
 
@@ -93,7 +93,7 @@ func (s *GameService) SetRandomGame(gameId, numberOfQuestions int, percentages m
 func (s *GameService) FetchQueueByGameId(gameId, limit int64) ([]models.QuestionQueueResponse, error) {
 	queue, err := s.queueRepo.FetchQueueByGameId(gameId, limit)
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return nil, fmt.Errorf("failed to fetch queue for game %d: %w", gameId, err)
 	}
 
 	return queue, nil

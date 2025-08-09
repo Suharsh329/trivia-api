@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"trivia/internal/models"
@@ -28,6 +29,7 @@ func (h *GameHandler) GetGames(w http.ResponseWriter, r *http.Request) {
 
 	games, err := h.Service.GetGames(filters)
 	if err != nil {
+		log.Printf("GameHandler.GetGames error: %v", err)
 		response.Error(w, http.StatusInternalServerError, "Failed to fetch games")
 		return
 	}
@@ -64,6 +66,7 @@ func (h *GameHandler) GetGame(w http.ResponseWriter, r *http.Request) {
 
 	questions, err := h.Service.FetchQueueByGameId(gameId, limit)
 	if err != nil {
+		log.Printf("GameHandler.GetGame error: %v", err)
 		response.Error(w, http.StatusInternalServerError, "Failed to fetch questions")
 		return
 	}
@@ -83,6 +86,7 @@ func (h *GameHandler) CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	newGame, err := h.Service.CreateGame(game)
 	if err != nil {
+		log.Printf("GameHandler.CreateGame error: %v", err)
 		response.Error(w, http.StatusInternalServerError, "Failed to create a game")
 		return
 	}
