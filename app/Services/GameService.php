@@ -22,13 +22,17 @@ class GameService
     {
         $this->validateRandomGameData($data);
 
+        // Get random questions based on difficulty percentages
+        $questions = $this->getRandomQuestions($data);
+
+        if ($questions->isEmpty()) {
+            throw new InvalidArgumentException('Not enough questions available to meet the criteria');
+        }
+
         // Create the game first
         $game = $this->createGame();
 
         $this->createContestants($game->id, $data['contestants'], $data['is_team']);
-
-        // Get random questions based on difficulty percentages
-        $questions = $this->getRandomQuestions($data);
 
         // Add questions to the queue for this game
         $this->addQuestionsToQueue($game->id, $questions);
